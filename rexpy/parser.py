@@ -1,4 +1,4 @@
-import nfa
+import rexpy.nfa as nfa
 
 # TODO When the grammar is augmented to have more than just '*' and 'concat,' change this to properly parse a
 # CFG and return a tree.

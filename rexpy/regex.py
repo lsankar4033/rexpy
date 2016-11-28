@@ -1,4 +1,4 @@
-import parser
+import rexpy.parser as parser
 
 def _add_node(n, current_nodes):
     """Augments current_nodes with n and any other nodes reachable by n with an epsilon transition. Note
