@@ -81,6 +81,8 @@ def build_star_node_group(input_group):
     input_group.end_node.add_transition("", new_end)
     new_end.add_transition("", new_start)
 
+    new_start.add_transition("", new_end)
+
     return NodeGroup(new_start, new_end)
 
 def build_concat_node_group(input_groups):
