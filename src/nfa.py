@@ -13,7 +13,7 @@ class NFA:
         # Use 'id(x)' to label each node
         edges = []
 
-        # Do a dfs through the graph, keeping track of each edge
+        # Do a DFS through the graph, keeping track of each edge
         frontier = [self.start_node]
         visited = set()
         node_dict = {} # used to re-index nodes to a more human readable format

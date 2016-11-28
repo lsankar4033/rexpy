@@ -42,7 +42,7 @@ def convert_re_to_nfa(parsed_re):
     to_concat = [term_str_to_node_group(t) for t in parsed_re]
     concat_node_group = nfa.build_concat_node_group(to_concat)
 
-    return nfa.NFA(concat_node_group.start_node, [concat_node_group.end_node])
+    return nfa.NFA(concat_node_group.start_node, set([concat_node_group.end_node]))
 
 def re_string_to_nfa(re_str):
     return convert_re_to_nfa(parse_re_string(re_str))
