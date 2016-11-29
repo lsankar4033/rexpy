@@ -1,3 +1,5 @@
+import rexpy.ast as ast
+
 class NFA:
     """The NFA class represents an entire NFA representing an RE. Each NFA consists of a start_node and
     accept_nodes. The transition function is implicit as each node has its own transition map.
@@ -91,3 +93,21 @@ def build_concat_nfa(nfas):
         end_accept.add_transition("", new_accept)
 
     return NFA(new_start, set([new_accept]))
+
+def ast_to_nfa(re_ast):
+    if type(re_ast) is ast.ConcatASTNode:
+        inner_nfas = [ast_to_nfa(node) for node in re_ast.nodes]
+        return build_concat_nfa(inner_nfas)
+
+    elif type(re_ast) is ast.UnionASTNode:
+        pass
+
+    elif type(re_ast) is ast.StarASTNode:
+        inner_nfa = ast_to_nfa(re_ast.node)
+        return build_star_nfa(inner_nfa)
+
+    elif type(re_ast) is ast.AtomASTNode:
+        return build_single_char_nfa(re_ast.char)
+
+    else:
+        raise ValueError("Regex AST has improperly formed AST Node: %s" % re_ast)
