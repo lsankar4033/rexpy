@@ -1,5 +1,4 @@
 import rexpy.ast as ast
-import rexpy.nfa as nfa
 
 def re_string_to_ast(re_str):
     nodes_to_concat = []
