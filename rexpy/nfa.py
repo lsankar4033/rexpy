@@ -55,45 +55,39 @@ class Node:
         else:
             self.transitions[trans_char] = [node]
 
-class NodeGroup:
-    """A NodeGroup represents a single grouping from the RE derivation tree. Each NodeGroup must have both a
-    start Node and an end Node so that it can be composed with other groups properly while building the NFA
-    from an RE grammar derivation.
-    """
-    def __init__(self, start_node, end_node):
-        self.start_node = start_node
-        self.end_node = end_node
-
-def build_single_char_node_group(char):
-    """Given a single character, creates a node group with one transition from start node to end node using
+def build_single_char_nfa(char):
+    """Given a single character, creates an NFA with one transition from start node to end node using
     that character."""
     start = Node()
-    end = Node()
-    start.add_transition(char, end)
-    return NodeGroup(start, end)
+    accept = Node()
+    start.add_transition(char, accept)
+    return NFA(start, set([accept]))
 
-def build_star_node_group(input_group):
-    """Given a NodeGroup input_group, create a new NodeGroup representing (input_group)*."""
+def build_star_nfa(nfa):
+    """Given a NFA nfa, create a new NFA representing (nfa)*."""
     new_start = Node()
-    new_start.add_transition("", input_group.start_node)
+    new_start.add_transition("", nfa.start_node)
 
-    new_end = Node()
-    input_group.end_node.add_transition("", new_end)
-    new_end.add_transition("", new_start)
+    new_accept = Node()
+    for old_accept in nfa.accept_nodes:
+        old_accept.add_transition("", new_accept)
 
-    new_start.add_transition("", new_end)
+    new_accept.add_transition("", new_start)
+    new_start.add_transition("", new_accept)
 
-    return NodeGroup(new_start, new_end)
+    return NFA(new_start, set([new_accept]))
 
-def build_concat_node_group(input_groups):
+def build_concat_nfa(nfas):
     """Given a sequence of NodeGroups, create a NodeGroup representing their (in order) concatenation."""
-    for i in range(1, len(input_groups)):
-        input_groups[i-1].end_node.add_transition("", input_groups[i].start_node)
+    for i in range(1, len(nfas)):
+        for inner_accept in nfas[i-1].accept_nodes:
+            inner_accept.add_transition("", nfas[i].start_node)
 
     new_start = Node()
-    new_end = Node()
+    new_accept = Node()
 
-    new_start.add_transition("", input_groups[0].start_node)
-    input_groups[-1].end_node.add_transition("", new_end)
+    new_start.add_transition("", nfas[0].start_node)
+    for end_accept in nfas[-1].accept_nodes:
+        end_accept.add_transition("", new_accept)
 
-    return NodeGroup(new_start, new_end)
+    return NFA(new_start, set([new_accept]))
