@@ -22,6 +22,3 @@ def re_string_to_ast(re_str):
         prev_char = char
 
     return ast.ConcatASTNode(nodes_to_concat)
-
-def re_string_to_nfa(re_str):
-    return nfa.ast_to_nfa(re_string_to_ast(re_str))

@@ -1,4 +1,5 @@
 import rexpy.parser as parser
+import rexpy.nfa as nfa
 
 def _add_node(n, current_nodes):
     """Augments current_nodes with n and any other nodes reachable by n with an epsilon transition. Note
@@ -22,12 +23,13 @@ def _add_node(n, current_nodes):
 
 # TODO Maybe this should be encapsulated in a class once we add capture variables, etc.
 def match(re_str, s):
-    nfa = parser.re_string_to_nfa(re_str)
+    re_ast = parser.re_string_to_ast(re_str)
+    re_nfa = nfa.ast_to_nfa(re_ast)
 
     # add the start node of the NFA to 'current nodes,' then explore any epsilon branches to add to
     # current nodes (do loop detection)
     current_nodes = set()
-    _add_node(nfa.start_node, current_nodes)
+    _add_node(re_nfa.start_node, current_nodes)
 
     # read the next char of s, update all nodes in 'current nodes,' then follow epsilon branches (do loop
     # detection)
@@ -41,4 +43,4 @@ def match(re_str, s):
             _add_node(new_node, current_nodes)
 
     # return true if any node is an accept node
-    return any(filter(lambda n: n in nfa.accept_nodes, current_nodes))
+    return any(filter(lambda n: n in re_nfa.accept_nodes, current_nodes))
