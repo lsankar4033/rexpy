@@ -94,13 +94,26 @@ def build_concat_nfa(nfas):
 
     return NFA(new_start, set([new_accept]))
 
+def build_union_nfa(nfas):
+    """Given a sequence of NodeGroups, create a NodeGroup representing their Union."""
+    new_start = Node()
+    new_accept = Node()
+
+    for nfa in nfas:
+        new_start.add_transition("", nfa.start_node)
+        for accept_node in nfa.accept_nodes:
+            accept_node.add_transition("", new_accept)
+
+    return NFA(new_start, set([new_accept]))
+
 def ast_to_nfa(re_ast):
     if type(re_ast) is ast.ConcatASTNode:
         inner_nfas = [ast_to_nfa(node) for node in re_ast.nodes]
         return build_concat_nfa(inner_nfas)
 
     elif type(re_ast) is ast.UnionASTNode:
-        pass
+        inner_nfas = [ast_to_nfa(node) for node in re_ast.nodes]
+        return build_union_nfa(inner_nfas)
 
     elif type(re_ast) is ast.StarASTNode:
         inner_nfa = ast_to_nfa(re_ast.node)

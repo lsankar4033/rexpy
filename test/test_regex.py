@@ -17,3 +17,8 @@ class TestRegex(unittest.TestCase):
     def test_concat(self):
         self.assertFalse(match("a*b", "aaa"))
         self.assertTrue(match("a*b*", "aaa"))
+
+    def test_union(self):
+        self.assertTrue(match("a*b|c", "aaab"))
+        self.assertTrue(match("a*b|c", "c"))
+        self.assertFalse(match("a*bc|cd", "d"))
