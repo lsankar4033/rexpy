@@ -49,6 +49,7 @@ class Node:
     transitions is a map from char -> [Node]
     """
     def __init__(self):
+        # TODO - use a defaultdict here!
         self.transitions = {}
 
     def add_transition(self, trans_char, node):
