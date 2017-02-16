@@ -1,3 +1,6 @@
+from collections import namedtuple
+
+# TODO Change import to import specific node types
 import rexpy.ast as ast
 
 # RE Grammar
@@ -6,14 +9,86 @@ import rexpy.ast as ast
 #
 # One possible grammar (quotes used to indicate character instead of symbol):
 #
-# R -> D
+# R -> U | P
 # P -> '('R')'
-# D -> C | C'|'D | P | P'|'D
+# U -> C | C'|'U | P | P'|'U
 # C -> S | SC | P | PC
 # S -> A | A'*' | P | P'*'
 # A -> \w | P
 #
 # Note that this grammar is NOT LL(1) because each level has multiple derivations starting with '('
+
+# Each intermediate parse method returns a list of these
+ParsedNode = namedtuple('ParsedNode', 'ast_node next_idx')
+
+def parse_regex(re_str, next_idx):
+    union_attempts = parse_union(re_str, next_idx)
+    if len(union_attempts) > 0:
+        return union_attempts
+    else:
+        return parse_paren(re_str, next_idx)
+
+def parse_paren(re_str, next_idx):
+    if re_str[next_idx] is not '(':
+        return []
+    next_idx += 1
+
+    parsed_regexes = parse_regex(re_str, next_idx)
+
+    # TODO generalize this filtering mechanism. This would clean up below methods as well
+    parsed_close_paren = []
+    for parsed_regex in parsed_regexes:
+        ni = parsed_regex.next_idx
+        if re_str[ni] is ')':
+            parsed_close_paren.append(
+                parsed_regex._replace(next_idx = ni + 1)
+            )
+
+    return parsed_close_paren
+
+def parse_union(re_str, next_idx):
+    # C
+    parsed_c = parse_concat(re_str, next_idx)
+
+    # C'|'U
+    parsed_cu = []
+    for parsed_concat in parsed_c:
+        ni = parsed_concat.next_idx
+        if re_str[ni] is '|':
+            parsed_unions = parse_union(re_str, ni + 1)
+            for parsed_union in parsed_unions:
+                parsed_cu.append(
+                    parsed_union._replace(
+                        ast_node = ast.UnionASTNode([parsed_concat.ast_node, parsed_union.ast_node])
+                    )
+                )
+
+    # P
+    parsed_p = parse_paren(re_str, next_idx)
+
+    # P'|'U
+    parsed_pu = []
+    for parsed_paren in parsed_p:
+        ni = parsed_paren.next_idx
+        if re_str[ni] is '|':
+            parsed_unions = parse_union(re_str, ni + 1)
+            for parsed_union in parsed_unions:
+                parsed_pu.append(
+                    parsed_union._replace(
+                        ast_node = ast.UnionASTNode([parsed_paren.ast_node, parsed_union.ast_node])
+                    )
+                )
+
+    return parsed_c + parsed_cu + parsed_p + parsed_pu
+
+def parse_concat(re_str, i):
+    return []
+
+def parse_star(re_str, i):
+    return []
+
+def parse_atom(re_str, i):
+    return []
 
 # TODO Augment this parser to properly parse according to the full RE grammar. Will involve hardcoding an LR
 # parser
