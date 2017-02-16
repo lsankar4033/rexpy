@@ -15,7 +15,8 @@ import rexpy.ast as ast
 #
 # Note that this grammar is NOT LL(1) because each level has multiple derivations starting with '('
 
-# TODO Augment this parser to properly parse according to the full RE grammar
+# TODO Augment this parser to properly parse according to the full RE grammar. Will involve hardcoding an LR
+# parser
 def re_string_to_ast(re_str):
     """This simplified version of regexes allows for only expressions with a non-recursive tree structure and
     no parens. What this means is that each of the '|', concat, and '*' operators occur at a single depth of
