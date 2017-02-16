@@ -1,5 +1,14 @@
 import rexpy.ast as ast
 
+# RE Grammar
+# One approach is to store the normal precedence rules with paren expressions built on top of that.
+# Normal precedence is *, concat, union
+#
+# Parenthesization can work by creating a new rule for a parenthesized element follwed by each operation (and
+# atom)
+#
+# I can also just look at existing RE grammars online...
+
 # TODO Augment this parser to properly parse according to the full RE grammar
 def re_string_to_ast(re_str):
     """This simplified version of regexes allows for only expressions with a non-recursive tree structure and
