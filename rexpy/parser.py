@@ -4,10 +4,16 @@ import rexpy.ast as ast
 # One approach is to store the normal precedence rules with paren expressions built on top of that.
 # Normal precedence is *, concat, union
 #
-# Parenthesization can work by creating a new rule for a parenthesized element follwed by each operation (and
-# atom)
+# One possible grammar (quotes used to indicate character instead of symbol):
 #
-# I can also just look at existing RE grammars online...
+# R -> D
+# P -> '('R')'
+# D -> C | C'|'D | P | P'|'D
+# C -> S | SC | P | PC
+# S -> A | A'*' | P | P'*'
+# A -> \w | P
+#
+# Note that this grammar is NOT LL(1) because each level has multiple derivations starting with '('
 
 # TODO Augment this parser to properly parse according to the full RE grammar
 def re_string_to_ast(re_str):
