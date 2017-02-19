@@ -1,7 +1,5 @@
 from collections import namedtuple
-
-# TODO Change import to import specific node types
-import rexpy.ast as ast
+from rexpy.ast import ConcatASTNode, UnionASTNode, StarASTNode, AtomASTNode
 
 # RE Grammar
 # One approach is to store the normal precedence rules with paren expressions built on top of that.
@@ -59,7 +57,7 @@ def parse_union(re_str, next_idx):
             for parsed_union in parsed_unions:
                 parsed_cu.append(
                     parsed_union._replace(
-                        ast_node = ast.UnionASTNode([parsed_concat.ast_node, parsed_union.ast_node])
+                        ast_node = UnionASTNode([parsed_concat.ast_node, parsed_union.ast_node])
                     )
                 )
 
@@ -75,7 +73,7 @@ def parse_union(re_str, next_idx):
             for parsed_union in parsed_unions:
                 parsed_pu.append(
                     parsed_union._replace(
-                        ast_node = ast.UnionASTNode([parsed_paren.ast_node, parsed_union.ast_node])
+                        ast_node = UnionASTNode([parsed_paren.ast_node, parsed_union.ast_node])
                     )
                 )
 
@@ -108,7 +106,7 @@ def build_union_node(re_str):
     if len(nodes_to_union) is 1:
         return nodes_to_union[0]
     else:
-        return ast.UnionASTNode(nodes_to_union)
+        return UnionASTNode(nodes_to_union)
 
 def build_concat_node(re_str):
     nodes_to_concat = []
@@ -123,14 +121,14 @@ def build_concat_node(re_str):
 
         elif prev_char is not "*" and char is "*":
             prev_node = nodes_to_concat.pop()
-            nodes_to_concat.append(ast.StarASTNode(prev_node))
+            nodes_to_concat.append(StarASTNode(prev_node))
 
         else:
-            nodes_to_concat.append(ast.AtomASTNode(char))
+            nodes_to_concat.append(AtomASTNode(char))
 
         prev_char = char
 
     if len(nodes_to_concat) is 1:
         return nodes_to_concat[0]
     else:
-        return ast.ConcatASTNode(nodes_to_concat)
+        return ConcatASTNode(nodes_to_concat)
