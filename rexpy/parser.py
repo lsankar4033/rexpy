@@ -78,7 +78,6 @@ def parse_star(re_str, next_idx):
 
     return parsed_a + parsed_astar
 
-# TODO Add escape character support
 invalid_atoms = set(['(', '|', '*'])
 
 def parse_atom(re_str, next_idx):
