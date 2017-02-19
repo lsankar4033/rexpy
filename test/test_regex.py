@@ -22,3 +22,13 @@ class TestRegex(unittest.TestCase):
         self.assertTrue(match("a*b|c", "aaab"))
         self.assertTrue(match("a*b|c", "c"))
         self.assertFalse(match("a*bc|cd", "d"))
+
+    def test_paren(self):
+        self.assertFalse(match("(ab)*", "a"))
+        self.assertFalse(match("(ab)*", "abb"))
+        self.assertTrue(match("(ab)*", "ab"))
+        self.assertTrue(match("(ab)*", "ababab"))
+
+        self.assertFalse(match("(a|bc)d", "acd"))
+        self.assertTrue(match("(a|bc)d", "bcd"))
+        self.assertTrue(match("(a|bc)d", "ad"))

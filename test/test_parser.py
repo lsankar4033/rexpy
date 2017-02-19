@@ -33,4 +33,21 @@ class TestParser(unittest.TestCase):
                                   [ast.AtomASTNode("c"),
                                    ast.StarASTNode(ast.AtomASTNode("d"))])]))
 
-    # TODO test individual parse methods used in new paren parser
+    def test_paren(self):
+        self.assertEqual(re_string_to_ast("(a|b)*c"),
+                         ast.ConcatASTNode(
+                             [ast.StarASTNode(
+                                 ast.UnionASTNode(
+                                     [ast.AtomASTNode("a"),
+                                      ast.AtomASTNode("b")])),
+                              ast.AtomASTNode("c")]))
+
+        # NOTE: Maybe we want to collapse the nesting of Concats/Unions as seen here in the future
+        self.assertEqual(re_string_to_ast("(a(b(c|d)))"),
+                         ast.ConcatASTNode(
+                             [ast.AtomASTNode("a"),
+                              ast.ConcatASTNode(
+                                  [ast.AtomASTNode("b"),
+                                   ast.UnionASTNode(
+                                       [ast.AtomASTNode("c"),
+                                        ast.AtomASTNode("d")])])]))
