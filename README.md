@@ -5,3 +5,4 @@ TODO:
 - add tests
 - clean up parse code. in particular, favor sequential calls over nesting
 - add proper escape characters
+- add capture functionality

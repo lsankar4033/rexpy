@@ -21,7 +21,6 @@ def _add_node(n, current_nodes):
                 frontier.extend(
                     list(filter(lambda n: n not in current_nodes, next_node.transitions[''])))
 
-# TODO Maybe this should be encapsulated in a class once we add capture variables, etc.
 def match(re_str, s):
     re_ast = parser.re_string_to_ast(re_str)
     re_nfa = nfa.ast_to_nfa(re_ast)
