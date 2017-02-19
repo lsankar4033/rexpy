@@ -7,11 +7,11 @@ from rexpy.ast import ConcatASTNode, UnionASTNode, StarASTNode, AtomASTNode
 #
 # One possible grammar (quotes used to indicate character instead of symbol):
 #
-# R -> U | P
+# R -> U
 # P -> '('R')'
-# U -> C | C'|'U | P | P'|'U
-# C -> S | SC | P | PC
-# S -> A | A'*' | P | P'*'
+# U -> C | C'|'U
+# C -> S | SC
+# S -> A | A'*'
 # A -> \w | P
 #
 # Note that this grammar is NOT LL(1) because each level has multiple derivations starting with '('
