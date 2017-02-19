@@ -19,6 +19,11 @@ from rexpy.ast import ConcatASTNode, UnionASTNode, StarASTNode, AtomASTNode
 # Each intermediate parse method returns a list of these
 ParsedNode = namedtuple('ParsedNode', 'ast_node next_idx')
 
+# TODO clean up parse code
+# Things I don't like about it:
+# 1. inconsistent naming of intermediate parsed nodes (i.e. parsed_astar)
+# 2. nested ops instead of sequential ops
+
 def parse_regex(re_str, next_idx):
     return parse_union(re_str, next_idx)
 
@@ -29,7 +34,6 @@ def parse_paren(re_str, next_idx):
 
     parsed_regexes = parse_regex(re_str, next_idx)
 
-    # TODO generalize this filtering mechanism. This would clean up below methods as well
     parsed_close_paren = []
     for parsed_regex in parsed_regexes:
         ni = parsed_regex.next_idx
@@ -76,11 +80,35 @@ def parse_concat(re_str, next_idx):
 
     return parsed_s + parsed_sc
 
-def parse_star(re_str, i):
-    return []
+def parse_star(re_str, next_idx):
+    # A
+    parsed_a = parse_atom(re_str, next_idx)
 
-def parse_atom(re_str, i):
-    return []
+    # A'*'
+    parsed_astar = []
+    for parsed_atom in parsed_a:
+        ni = parsed_atom.next_idx
+        if re_str[ni] is '*':
+            parsed_astar.append(
+                ParsedNode(StarASTNode(parsed_atom.ast_node), ni + 1)
+            )
+
+    return parsed_a + parsed_astar
+
+# TODO Add escape character support
+invalid_atoms = set(['(', '|', '*'])
+
+def parse_atom(re_str, next_idx):
+    # P
+    parsed_p = parse_paren(re_str, next_idx)
+
+    # \w
+    parsed_w = []
+    if re_str[next_idx] not in invalid_atoms:
+        ast_node = AtomASTNode(re_str[next_idx])
+        parsed_w.append(ParsedNode(ast_node, next_idx + 1))
+
+    return parsed_p + parsed_w
 
 # TODO Augment this parser to properly parse according to the full RE grammar. Will involve hardcoding an LR
 # parser

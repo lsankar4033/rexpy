@@ -33,4 +33,4 @@ class TestParser(unittest.TestCase):
                                   [ast.AtomASTNode("c"),
                                    ast.StarASTNode(ast.AtomASTNode("d"))])]))
 
-    # TODO functionality supporting test cases with parens, recursion
+    # TODO test individual parse methods used in new paren parser
