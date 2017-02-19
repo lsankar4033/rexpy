@@ -20,11 +20,7 @@ from rexpy.ast import ConcatASTNode, UnionASTNode, StarASTNode, AtomASTNode
 ParsedNode = namedtuple('ParsedNode', 'ast_node next_idx')
 
 def parse_regex(re_str, next_idx):
-    union_attempts = parse_union(re_str, next_idx)
-    if len(union_attempts) > 0:
-        return union_attempts
-    else:
-        return parse_paren(re_str, next_idx)
+    return parse_union(re_str, next_idx)
 
 def parse_paren(re_str, next_idx):
     if re_str[next_idx] is not '(':
@@ -61,23 +57,7 @@ def parse_union(re_str, next_idx):
                     )
                 )
 
-    # P
-    parsed_p = parse_paren(re_str, next_idx)
-
-    # P'|'U
-    parsed_pu = []
-    for parsed_paren in parsed_p:
-        ni = parsed_paren.next_idx
-        if re_str[ni] is '|':
-            parsed_unions = parse_union(re_str, ni + 1)
-            for parsed_union in parsed_unions:
-                parsed_pu.append(
-                    parsed_union._replace(
-                        ast_node = UnionASTNode([parsed_paren.ast_node, parsed_union.ast_node])
-                    )
-                )
-
-    return parsed_c + parsed_cu + parsed_p + parsed_pu
+    return parsed_c + parsed_cu
 
 def parse_concat(re_str, next_idx):
     # S
@@ -94,21 +74,7 @@ def parse_concat(re_str, next_idx):
                 )
             )
 
-    # P
-    parsed_p = parse_paren(re_str, next_idx)
-
-    # PC
-    parsed_pc = []
-    for parsed_paren in parsed_p:
-        parsed_concats = parse_concat(re_str, parsed_paren.next_id)
-        for parsed_concat in parsed_concats:
-            parsed_pc.append(
-                parsed_concat._replace(
-                    ast_node = ConcatASTNode([parsed_paren.ast_node, parsed_concat.ast_node])
-                )
-            )
-
-    return parsed_s + parsed_sc + parsed_p + parsed_pc
+    return parsed_s + parsed_sc
 
 def parse_star(re_str, i):
     return []
