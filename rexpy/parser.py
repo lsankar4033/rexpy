@@ -79,8 +79,36 @@ def parse_union(re_str, next_idx):
 
     return parsed_c + parsed_cu + parsed_p + parsed_pu
 
-def parse_concat(re_str, i):
-    return []
+def parse_concat(re_str, next_idx):
+    # S
+    parsed_s = parse_star(re_str, next_idx)
+
+    # SC
+    parsed_sc = []
+    for parsed_star in parsed_s:
+        parsed_concats = parse_concat(re_str, parsed_star.next_idx)
+        for parsed_concat in parsed_concats:
+            parsed_sc.append(
+                parsed_concat._replace(
+                    ast_node = ConcatASTNode([parsed_star.ast_node, parsed_concat.ast_node])
+                )
+            )
+
+    # P
+    parsed_p = parse_paren(re_str, next_idx)
+
+    # PC
+    parsed_pc = []
+    for parsed_paren in parsed_p:
+        parsed_concats = parse_concat(re_str, parsed_paren.next_id)
+        for parsed_concat in parsed_concats:
+            parsed_pc.append(
+                parsed_concat._replace(
+                    ast_node = ConcatASTNode([parsed_paren.ast_node, parsed_concat.ast_node])
+                )
+            )
+
+    return parsed_s + parsed_sc + parsed_p + parsed_pc
 
 def parse_star(re_str, i):
     return []
