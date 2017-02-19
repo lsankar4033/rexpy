@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 import rexpy.ast as ast
 
 class NFA:
@@ -49,14 +51,10 @@ class Node:
     transitions is a map from char -> [Node]
     """
     def __init__(self):
-        # TODO - use a defaultdict here!
-        self.transitions = {}
+        self.transitions = defaultdict(list)
 
     def add_transition(self, trans_char, node):
-        if trans_char in self.transitions:
-            self.transitions[trans_char].append(node)
-        else:
-            self.transitions[trans_char] = [node]
+        self.transitions[trans_char].append(node)
 
 def build_single_char_nfa(char):
     """Given a single character, creates an NFA with one transition from start node to end node using
