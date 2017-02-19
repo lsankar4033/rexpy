@@ -107,4 +107,4 @@ def re_string_to_ast(re_str):
     parses = parse_regex(re_str, 0)
     finished_parses = [parse for parse in parses if parse.next_idx == len(re_str)]
 
-    return finished_parses[0]
+    return finished_parses[0].ast_node
